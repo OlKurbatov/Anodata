@@ -2,12 +2,14 @@ package endpoints;
 
 import ecc.EC;
 import ecc.ECDH;
+import ecc.Schnorr;
 import ecc.Stealth;
 import encr.AES;
 
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.Signature;
 import java.security.spec.ECPoint;
 import java.util.Random;
 
@@ -43,7 +45,26 @@ public class Interact {
         return Stealth.ContainerIdVerification(ownPrivateKey, stealth);
     }
 
-    public static void main(String[] args) throws NoSuchAlgorithmException {
+    public static ecc.Schnorr.Signature genSignature (ECPoint publicKey, String message, BigInteger privateKey) throws NoSuchAlgorithmException{
+        byte[] mess = message.getBytes();
+        ecc.Schnorr.Signature signature = Schnorr.signGen(publicKey, mess, privateKey);
+        return signature;
+    }
+
+    public static boolean verifySignature (Schnorr.Signature signature, String message, ECPoint publicKey) throws NoSuchAlgorithmException{
+        byte[] mess = message.getBytes();
+        return ecc.Schnorr.signVerify(signature, mess, publicKey);
+    }
+
+    public static String generatePoW (String message) throws NoSuchAlgorithmException{
+        return proof.PoW.PoWGen(message);
+    }
+
+    public static boolean verifyPoW(String nonce, String message) throws NoSuchAlgorithmException{
+        return proof.PoW.PoWVer(nonce, message);
+    }
+
+    /*public static void main(String[] args) throws NoSuchAlgorithmException {
         EC.KeyPair keyPairAlice = new EC.KeyPair();
         EC.KeyPair keyPairBob = new EC.KeyPair();
 
@@ -55,5 +76,5 @@ public class Interact {
 
         Stealth bobOneTimeValue = generateOneTimeValue(keyPairBob.getPublicKey());
         System.out.println(verifyOneTimeValue(keyPairBob.getPrivateKey(), bobOneTimeValue));
-    }
+    }*/
 }
